@@ -1,0 +1,30 @@
+{
+  "name": "nnc/quantum",
+  "description": "",
+  "type": "project",
+  "license": "Commercial",
+  "authors": [
+    {
+      "name": "Vlad Shamrai",
+      "email": "work.vladshamrai@gmail.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "altorouter/altorouter": "1.1.0",
+    "guzzlehttp/guzzle": "^7.2",
+    "ext-pdo": "*",
+    "ext-json": "*",
+    "ext-curl": "*",
+    "symfony/monolog-bundle": "^3.7",
+    "monolog/monolog": "^2.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "": "./"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.5"
+  }
+}
