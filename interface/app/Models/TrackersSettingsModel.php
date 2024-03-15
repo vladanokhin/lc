@@ -10,10 +10,13 @@ class TrackersSettingsModel extends Model
     use HasFactory;
 
     protected $connection = 'mysql_lc';
+
     protected $table = 'trackers_settings_models';
+
     protected $fillable = [
         't_id',
         't_url',
         't_api_key',
+        'api_version'
     ];
 }

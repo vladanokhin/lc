@@ -8,13 +8,25 @@
                    class="text-center mt-1 focus:ring focus:border-blue-300
                            w-full shadow border text-3xl text-gray-700 sm:text-sm border-gray-300 rounded-md py-1">
         </div>
-        <div class="col-span-6 sm:col-span-5 sm:w-full">
+        <div class="col-span-6 sm:col-span-4 sm:w-full">
             <label for="t_url" class="block text-sm font-medium text-gray-700 text-xl">Tracker endpoint
                 URL</label>
             <input name="t_url" type="text" id="tracker-id" placeholder="domain.com"
                    value="{{ old('t_id', optional($tracker)['t_url']) }}"
                    class="text-center mt-1 focus:ring focus:border-blue-300
                            w-full shadow border text-3xl text-gray-700 sm:text-sm border-gray-300 rounded-md py-1">
+        </div>
+        <div class="col-span-1 sm:col-span-1 justify-center">
+            <label for="api_version" class="block text-sm font-medium text-gray-700 text-xl">Api</label>
+            <select name="api_version" id="api_version"  class="text-center mt-1 focus:ring focus:border-blue-300w-full shadow border text-3xl text-gray-700 sm:text-sm border-gray-300 rounded-md py-1">
+                @foreach($apiVersions as $version)
+                    @if($tracker['api_version'] === $version)
+                        <option value="{{ $version }}" selected>{{ $version }}</option>
+                    @else
+                        <option value="{{ $version }}">{{ $version }}</option>
+                    @endif
+                @endforeach
+            </select>
         </div>
         <div class="col-span-6 sm:col-span-6 sm:w-full">
             <label for="t_api_key" class="block text-sm font-medium text-gray-700 text-xl">Tracker API
