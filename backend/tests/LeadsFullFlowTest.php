@@ -1,13 +1,18 @@
 <?php
 
-use src\App\Http\Controller\LeadCollectorApiController;
-use src\App\Services\cronServices\cronHandleUndeliveredLeads;
+namespace Tests;
+
+use Exception;
 use src\App\Services\cronServices\cronSenderManager;
 use src\App\Services\ScheduledLeads\ScheduledLeadsManager;
-use TestApp\Bootstrap;
+use Tests\TestApp\Bootstrap;
 
 class LeadsFullFlowTest extends Bootstrap
 {
+
+    /**
+     * @throws Exception
+     */
     public function testLeadsExisted()
     {
         $affbay = $this->app->getLeadByClickId('31824b4c8uqvc6o904');
@@ -236,20 +241,20 @@ class LeadsFullFlowTest extends Bootstrap
         $this->assertTrue($lead['conversion_status'] === 'added_to_tracker');
     }
 
-    public function testRestoringMissedLeads()
-    {
-        $file = __FILE__; $line = __LINE__;
-        print_r("\n\nEdit $file AFTER {$line} line");
-        $this->assertTrue(true);
-        exit();
-
-        $clickId = 'd4fb3irg63vj63ye11';
-        $restore = new cronHandleUndeliveredLeads();
-        $restore->launcher();
-        sleep(1);
-        $lead = $this->app->getLeadByClickId($clickId);
-        print_r("\nRestored status -> \t{$lead['conversion_status']}\n");
-        $this->assertTrue($lead['conversion_status'] !== 'added_to_tracker');
-        $this->assertTrue($lead['conversion_status'] === 'Resended');
-    }
+//    public function testRestoringMissedLeads()
+//    {
+//        $file = __FILE__; $line = __LINE__;
+//        print_r("\n\nEdit $file AFTER {$line} line");
+//        $this->assertTrue(true);
+//        exit();
+//
+//        $clickId = 'd4fb3irg63vj63ye11';
+//        $restore = new cronHandleUndeliveredLeads();
+//        $restore->launcher();
+//        sleep(1);
+//        $lead = $this->app->getLeadByClickId($clickId);
+//        print_r("\nRestored status -> \t{$lead['conversion_status']}\n");
+//        $this->assertTrue($lead['conversion_status'] !== 'added_to_tracker');
+//        $this->assertTrue($lead['conversion_status'] === 'Resended');
+//    }
 }

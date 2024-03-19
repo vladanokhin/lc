@@ -1,5 +1,6 @@
 <?php
 
-namespace TestApp;
+namespace Tests\TestApp;
 
-class Bootstrap extends \TestApp\LoadAppTest {}
+class Bootstrap extends LoadAppTest
+{}

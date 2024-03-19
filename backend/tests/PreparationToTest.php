@@ -1,8 +1,10 @@
 <?php
 
+namespace Tests;
+
 use src\App\Http\Controller\AppController;
 use src\App\Services\DatabaseService\Connection;
-use TestApp\Bootstrap;
+use Tests\TestApp\Bootstrap;
 
 class PreparationToTest extends Bootstrap
 {
