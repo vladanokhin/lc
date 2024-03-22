@@ -236,7 +236,7 @@ final class QueryOperations
    */
   public function findTracker($trackerId): ?array
   {
-    $sql = "SELECT t_id, t_url, t_api_key FROM trackers_settings_models WHERE t_id=\"{$trackerId}\"";
+    $sql = "SELECT t_id, t_url, t_api_key, api_version FROM trackers_settings_models WHERE t_id=\"{$trackerId}\"";
     $statement = $this->pdo->prepare($sql);
     $statement->execute();
 
@@ -258,7 +258,7 @@ final class QueryOperations
 
   public function getPartnersData(): ?array
   {
-    $sql = "SELECT t_id,t_url,t_api_key FROM trackers_settings_models;";
+    $sql = "SELECT t_id, t_url, t_api_key, api_version  FROM trackers_settings_models;";
     $statement = $this->pdo->prepare($sql);
     $statement->execute();
 

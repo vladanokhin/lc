@@ -5,8 +5,6 @@ namespace src\App\Services\LeadCollectorRequestService;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\RequestException;
-use PhpParser\Node\Expr\Clone_;
 use Psr\Http\Message\ResponseInterface;
 use src\App\Services\PartnerWorkerService\PartnerWorkerManager;
 

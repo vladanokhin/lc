@@ -7,6 +7,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
 use src\App\Container\AppContainer;
 use src\App\Container\LeadCollectorContainer;
+use src\App\Services\ApiService\ApiService;
 use src\App\Services\LeadCollectorRequestService\LeadCollectorRequestManager;
 use src\App\Services\ScheduledLeads\ScheduledLeadsManager;
 
@@ -53,7 +54,6 @@ class LeadOrderProcessing
      * [DEV]
      * @param array $order
      * @return bool
-     * @throws GuzzleException
      * @throws Exception
      */
     public function orderShortFormLead(array $order): bool
@@ -116,43 +116,42 @@ class LeadOrderProcessing
 
     /**
      * Querying lead info from tracker by click_id
-     * [DEV] ====>>> LOOK AT COMMENTED CODE!
+     *
      * @param string|null $clickId
      * @param int|null $trackerId
      * @return array
-     * @throws GuzzleException
+     * @throws Exception
      */
     public function grubLeadFromTrackerForOrder(string $clickId = null, int $trackerId = null): ?array
     {
-        if (null === $clickId || null === $trackerId) return null;
-        $response = $this->getClickInfoByClickId($clickId, $trackerId);
-        $data = json_decode($response->getBody()->getContents(), true);
-//        if (!isset($data['click'])) {
-//            return null;
-//        }
+        if ($clickId === null || $trackerId === null)
+            return null;
+
+        $data = $this->getClickInfoByClickId($clickId, $trackerId);
         $this->fixStatusProblem($data);
 
-        return (isset($data['click'])) ? $data['click'] : null;
-//        return $data['click'];
+        return $data;
     }
 
     /**
      * Request to tracker to get all lead info.
      *
-     * @param string $click
+     * @param string $clickId
      * @param int $trackerId
-     * @return ResponseInterface
-     * @throws GuzzleException
+     * @return array
+     * @throws Exception
      */
-    private function getClickInfoByClickId(string $click, int $trackerId)
+    private function getClickInfoByClickId(string $clickId, int $trackerId): array
     {
-        $apiUrl = LeadCollectorContainer::get($trackerId);
-        $link = sprintf("https://%s/arm.php?api_key=%s&action=clickinfo@get&clickid=%s",
-            $apiUrl['t_url'],
-            $apiUrl['t_api_key'],
-            $click
+        $tracker = LeadCollectorContainer::get($trackerId);
+        $binomClient = ApiService::getBinomClientByApiVersion(
+            $tracker['api_version'],
+            $tracker['t_url'],
+            $tracker['t_api_key']
         );
-        return (new LeadCollectorRequestManager())->sendLeadToTracker($link);
+        $data = $binomClient->getLead($clickId);
+
+        return $data['click'] ?? $data;
     }
 
     /**
@@ -163,8 +162,11 @@ class LeadOrderProcessing
      */
     private function fixStatusProblem(array &$data)
     {
-        if (array_key_exists('conversion_status', $data['click'])) {
-            $data['click']['conversion_status'] = 'Collected';
+        $keys = ['conversion_status', 'conversion_status_one'];
+
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $data))
+                $data[$key] = 'Collected';
         }
     }
 

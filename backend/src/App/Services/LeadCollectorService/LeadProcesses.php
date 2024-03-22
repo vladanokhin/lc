@@ -6,6 +6,7 @@ use Exception;
 use src\App\Container\AppContainer;
 use GuzzleHttp\Exception\GuzzleException;
 use src\App\Services\DatabaseService\{Connection, DataBaseManager};
+use src\App\Services\ApiService\ApiService;
 use src\App\Services\LeadCollectorRequestService\LeadCollectorRequestManager;
 use src\App\Services\ScheduledLeads\ScheduledLeadsManager;
 use src\exceptions\StatusSchemeException;
@@ -162,17 +163,22 @@ class LeadProcesses
    */
   public function syncStatusByLeadCollector(array $lead): void
   {
-    $tracker = $this->getResponsibleTracker($lead);
-    $tracker = (isset($tracker[0])) ? $tracker[0] : $tracker;
-    $link = sprintf('https://%s/click.php?cnv_id=%s&cnv_status=%s',
-      $tracker['t_url'],
-      $lead['click_id'],
-      $lead['conversion_status']
-    );
-    if (strtolower($lead['conversion_status']) == strtolower('collected')) {
-      $link .= "&cnv_status2={$lead['conversion_status']}";
-    }
-    $this->requestManager->sendLeadToTracker($link);
+      $tracker = $this->getResponsibleTracker($lead);
+      $binomClient = ApiService::getBinomClientByApiVersion(
+          $tracker['api_version'],
+          $tracker['t_url'],
+          $tracker['t_api_key']
+      );
+      $data = [
+          'cnv_id' => $lead['click_id'],
+          'cnv_status' => $lead['conversion_status'],
+      ];
+
+      if (strtolower($lead['conversion_status']) ==='collected') {
+          $data['cnv_status2'] = $lead['conversion_status'];
+      }
+
+      $binomClient->updateLead($data);
   }
 
   /**
@@ -283,30 +289,33 @@ class LeadProcesses
   /**
    * @param $data
    * @return void
-   * @throws GuzzleException
    * @throws Exception
    */
   private function commitPostback($data): void
   {
-    if (null === $data) return;
-    $lead = $this->getLeadByClickId($data['cnv_id']);
-    if ($lead['conversion_status'] === $data['cnv_status']) {
-      $link = sprintf("https://%s/click.php?%s",
-        $this->getResponsibleTracker($lead)[0]['t_url'],
-        http_build_query($data));
-      $this->requestManager->sendLeadToTracker($link);
-      exit();
-    }
-    $this->commitPostbackToHistory($data['cnv_id']);
-    $this->updateLeadInfo([
-      'conversion_status' => $data['cnv_status']
-    ], [
-      'click_id' => $data['cnv_id']
-    ]);
-    $link = sprintf("https://%s/click.php?%s",
-      $this->getResponsibleTracker($lead)[0]['t_url'], http_build_query($data)
-    );
-    $this->requestManager->sendLeadToTracker($link);
+      if ($data === null)
+          return;
+
+      $lead = $this->getLeadByClickId($data['cnv_id']);
+      $tracker = $this->getResponsibleTracker($lead);
+      $binomClient = ApiService::getBinomClientByApiVersion(
+          $tracker['api_version'],
+          $tracker['t_url'],
+          $tracker['t_api_key']
+      );
+
+      if ($lead['conversion_status'] === $data['cnv_status']) {
+        $binomClient->updateLead($data);
+        return;
+      }
+
+      $this->commitPostbackToHistory($data['cnv_id']);
+      $this->updateLeadInfo(
+          ['conversion_status' => $data['cnv_status']],
+          ['click_id' => $data['cnv_id']]
+      );
+
+      $binomClient->updateLead($data);
   }
 
   /**
@@ -318,7 +327,8 @@ class LeadProcesses
    */
   private function getResponsibleTracker(array $lead): ?array
   {
-    return $this->query->getTracker((int)$lead['t_id']);
+      $tracker = $this->query->getTracker((int)$lead['t_id']);
+      return $tracker[0] ?? $tracker;
   }
 
   /**

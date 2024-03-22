@@ -5,6 +5,7 @@ namespace src\App\Services\cronServices;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use src\App\Container\AppContainer;
+use src\App\Services\ApiService\ApiService;
 use src\App\Services\DatabaseService\Connection;
 use src\App\Services\DatabaseService\DataBaseManager;
 use src\App\Services\FileJobService\FileJobManager;
@@ -52,6 +53,7 @@ final class cronHandleLostLeads
 
     /**
      * @throws GuzzleException
+     * @throws \Exception
      */
     private function requestPayloadFromTracker(array $leads = null): void
     {
@@ -59,6 +61,7 @@ final class cronHandleLostLeads
             print_r("\r\n\r\n\t\t\tEverything is fine. Problematic leads not found.\r\n");
             exit();
         }
+        $client = new Client();
 
         foreach ($leads as $k => $lead) {
 
@@ -66,19 +69,20 @@ final class cronHandleLostLeads
             (new FileJobManager())->write($lead, "{$logDate}");
 
             $tracker = $this->db->getTracker($lead['t_id'])[0];
-            $trackerLink = sprintf('https://%s/arm.php?api_key=%s&action=clickinfo@get&clickid=%s',
-                $tracker['t_url'], $tracker['t_api_key'], $lead['click_id']);
-            $client = new Client();
-            $response = $client->get($trackerLink);
-            $response = $response->getBody()->getContents();
-            $response = \json_decode($response, true);
-            if (isset($response['status']) && $response['status'] == 'error') {
+            $binomClient = ApiService::getBinomClientByApiVersion(
+                $tracker['api_version'],
+                $tracker['t_url'],
+                $tracker['t_api_key']
+            );
+            $data = $binomClient->getLead($lead['click_id']);
+
+            if (count($data) === 0) {
                 $this->discardLead($lead['click_id'], 'lead-not-found');
                 continue;
             }
-            $response = $response['click'];
-            $response['click_id'] = $lead['click_id'];
-            $this->scheduledLeads->updateScheduledLead($response);
+            $data = $data['click'] ?? $data;
+            $data['click_id'] = $lead['click_id'];
+            $this->scheduledLeads->updateScheduledLead($data);
             $client->get(AppContainer::get('app_url') . "/refresh/{$lead['click_id']}");
         }
     }
