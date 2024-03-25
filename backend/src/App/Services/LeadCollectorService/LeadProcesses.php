@@ -163,7 +163,7 @@ class LeadProcesses
    */
   public function syncStatusByLeadCollector(array $lead): void
   {
-      $tracker = $this->getResponsibleTracker($lead);
+      $tracker = $this->getResponsibleTracker($lead['t_id']);
       $binomClient = ApiService::getBinomClientByApiVersion(
           $tracker['api_version'],
           $tracker['t_url'],
@@ -297,14 +297,20 @@ class LeadProcesses
           return;
 
       $lead = $this->getLeadByClickId($data['cnv_id']);
-      $tracker = $this->getResponsibleTracker($lead);
+
+      if(is_null($lead) && !isset($data['t_id']))
+          return;
+
+      $trackerId = $lead['t_id'] ?? null;
+      $tracker = $this->getResponsibleTracker($trackerId ?? $data['t_id']);
+
       $binomClient = ApiService::getBinomClientByApiVersion(
           $tracker['api_version'],
           $tracker['t_url'],
           $tracker['t_api_key']
       );
 
-      if ($lead['conversion_status'] === $data['cnv_status']) {
+      if (is_null($lead) || $lead['conversion_status'] === $data['cnv_status']) {
         $binomClient->updateLead($data);
         return;
       }
@@ -321,13 +327,13 @@ class LeadProcesses
   /**
    * Because we have few trackers in our system we must identify tracker for each lead
    *
-   * @param array $lead
+   * @param int $trackerId
    * @return mixed
    * @throws Exception
    */
-  private function getResponsibleTracker(array $lead): ?array
+  private function getResponsibleTracker(int $trackerId): ?array
   {
-      $tracker = $this->query->getTracker((int)$lead['t_id']);
+      $tracker = $this->query->getTracker($trackerId);
       return $tracker[0] ?? $tracker;
   }
 
