@@ -4,7 +4,7 @@ namespace src\App\Services\ApiService\Binom;
 
 use GuzzleHttp\Exception\GuzzleException;
 use src\App\Services\ApiService\ApiClient;
-use src\interfaces\BinomApi;
+use src\interfaces\Binom\BinomApi;
 
 class BinomApiV1 implements BinomApi
 {

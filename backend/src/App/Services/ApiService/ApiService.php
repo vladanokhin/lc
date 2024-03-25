@@ -4,7 +4,7 @@ namespace src\App\Services\ApiService;
 
 use src\App\Services\ApiService\Binom\BinomApiV1;
 use src\App\Services\ApiService\Binom\BinomApiV2;
-use src\interfaces\BinomApi;
+use src\interfaces\Binom\BinomApi;
 
 class ApiService
 {

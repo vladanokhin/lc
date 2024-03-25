@@ -11,10 +11,12 @@ return [
     'income_status_frontend' => 'lead_collector_statuses',
     'status_category_frontend' => 'ad2lynx_statuses',
     'lead_responses_frontend' => 'lead_responses',
-    //
 
     // Table for leads in queue to partner (sending by cron)
     'table_for_scheduled_leads' => 'scheduled_leads',
+
+    // Table for country codes
+    'table_for_country_codes' => 'country_codes',
 
     // All data that can be processed by lead collector
     'neededLeadData'    => [

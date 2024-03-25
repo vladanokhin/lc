@@ -99,9 +99,9 @@ class LeadDataHandler
   {
     return [
       'offer_name' => $request['offer_name'],
-      'conversion_status' => $request['conversion_status_one'] ?? $request['conversion_status'],
+      'conversion_status' => $request['conversion_status'],
       'offer_id' => $request['offer_id'],
-      'country_code' => $request['country_code'] ?? '',
+      'country_code' => $request['country_code'],
       'aff_network_name' => $request['aff_network_name']
     ];
   }

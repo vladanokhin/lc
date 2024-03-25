@@ -2,11 +2,16 @@
 
 namespace src\App\Services\ApiService\Binom;
 
+use Exception;
 use GuzzleHttp\Exception\GuzzleException;
+use src\App\Container\AppContainer;
 use src\App\Services\ApiService\ApiClient;
-use src\interfaces\BinomApi;
+use src\App\Services\DatabaseService\Connection;
+use src\App\Services\DatabaseService\DataBaseManager;
+use src\interfaces\Binom\BinomApi;
+use src\interfaces\Binom\NewerVersionsApi;
 
-class BinomApiV2 implements BinomApi
+class BinomApiV2 implements BinomApi, NewerVersionsApi
 {
     use SharedApiRequest;
 
@@ -16,14 +21,35 @@ class BinomApiV2 implements BinomApi
      */
     const API_URI = 'public/api/v1';
 
+    /**
+     * Tracker url
+     *
+     * @var string
+     */
     private string $trackerUrl;
 
+    /**
+     * Tracker api key
+     *
+     * @var string
+     */
     private string $apiKey;
 
+    /**
+     * Database manager
+     *
+     * @var DataBaseManager
+     */
+    private DataBaseManager $query;
+
+    /**
+     * @throws Exception
+     */
     public function __construct(string $trackerUrl, string $apiKey)
     {
         $this->trackerUrl = $trackerUrl;
         $this->apiKey = $apiKey;
+        $this->query = new DataBaseManager(Connection::make(), AppContainer::get('table_for_country_codes'));
     }
 
     /**
@@ -43,7 +69,7 @@ class BinomApiV2 implements BinomApi
         $data = json_decode($response->getBody()->getContents(), true);
 
         return $response->getStatusCode() === 200
-            ? $data
+            ? $this->convertFieldsToV1($data)
             : [];
     }
 
@@ -66,5 +92,35 @@ class BinomApiV2 implements BinomApi
     private function createUrl(string $trackerUrl, string $path): string
     {
         return "https://$trackerUrl/" . self::API_URI . "/$path";
+    }
+
+    /**
+     * @inheritDoc
+     * @return array
+     */
+    public function convertFieldsToV1(array $data): array
+    {
+        $correctFields = [
+            'id'                    => 'click_id',
+            'conversion_status_one' => 'conversion_status',
+            'conversion_status_two' => 'conversion_status_2',
+        ];
+
+        // Convert a fields
+        foreach($correctFields as $field => $correctField) {
+            if(!isset($data[$field]))
+                continue;
+
+            $data[$correctField] = $data[$field];
+            unset($data[$field]);
+        }
+
+        // Add a new filed country_code
+        if(isset($data['country'])) {
+            $result = $this->query->getBy(['country' => $data['country']], ['code']);
+            $data['country_code'] = $result['code'] ?? '';
+        }
+
+        return $data;
     }
 }
