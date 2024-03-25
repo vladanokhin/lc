@@ -80,7 +80,6 @@ final class cronHandleLostLeads
                 $this->discardLead($lead['click_id'], 'lead-not-found');
                 continue;
             }
-            $data = $data['click'] ?? $data;
             $data['click_id'] = $lead['click_id'];
             $this->scheduledLeads->updateScheduledLead($data);
             $client->get(AppContainer::get('app_url') . "/refresh/{$lead['click_id']}");

@@ -42,7 +42,7 @@ class BinomApiV1 implements BinomApi
 
         return isset($data['status']) && $data['status'] === 'error'
             ? []
-            : $data;
+            : $data['click'];
     }
 
     /**

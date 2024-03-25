@@ -149,9 +149,8 @@ class LeadOrderProcessing
             $tracker['t_url'],
             $tracker['t_api_key']
         );
-        $data = $binomClient->getLead($clickId);
 
-        return $data['click'] ?? $data;
+        return $binomClient->getLead($clickId);
     }
 
     /**
