@@ -10,7 +10,7 @@
     "production": "cross-env NODE_ENV=production"
   },
   "devDependencies": {
-    "@tailwindcss/ui": "^0.6.0",
+    "@tailwindcss/ui": "^0.7.2",
     "autoprefixer": "^10.2.5",
     "axios": "^0.21.1",
     "cross-env": "^7.0",
@@ -20,7 +20,7 @@
     "postcss": "^8.2.9",
     "postcss-import": "^12.0.1",
     "resolve-url-loader": "^3.1.2",
-    "tailwindcss": "^2.1.1"
+    "tailwindcss": "^2.2.19"
   },
   "name": "lead-collector",
   "description": "<p align=\"center\"><a href=\"https://laravel.com\" target=\"_blank\"><img src=\"https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg\" width=\"400\"></a></p>",
@@ -29,14 +29,6 @@
   "directories": {
     "test": "tests"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://gitlab.com/Q_J/q-interface.git"
-  },
   "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://gitlab.com/Q_J/q-interface/issues"
-  },
-  "homepage": "https://gitlab.com/Q_J/q-interface#readme"
+  "license": "ISC"
 }
