@@ -43,6 +43,15 @@
                     </a>
                 </div>
             </div>
+            <div class="text-center flex w-full mt-6">
+                <div class="p-6 w-1/4 my-4">
+                    <a href="{{ route('offers.index') }}"
+                       class="px-6 py-4 text-xl bg-white text-gray-800 border border-gray-400 rounded shadow-md
+                   hover:bg-blue-100 active:bg-gray-100 hover:shadow-none hover:bg-gray-200 hover:shadow-md">
+                        Offers
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 @endsection()

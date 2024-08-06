@@ -7,6 +7,7 @@ use App\Http\Controllers\LeadCollectorTrackersController;
 use App\Http\Controllers\LeadsStatisticsAjax;
 use App\Http\Controllers\PartnerProviderController;
 use App\Http\Controllers\StatusSchemeController;
+use App\Http\Controllers\TrackerOfferController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -85,6 +86,10 @@ Route::resource('/settings/partner-providers', PartnerProviderController::class)
 
 Route::resource('/settings/trackers', LeadCollectorTrackersController::class)
   ->except(['destroy'])->middleware('auth');
+
+Route::resource('/settings/offers', TrackerOfferController::class)
+     ->except(['create', 'edit'])
+     ->middleware('auth');
 
 Route::get('/create-backfix', [LeadCollectorController::class, 'backfixConfigurator'])
   ->name('backfixConfigurator');

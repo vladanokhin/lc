@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class TrackersSettingsModel extends Model
 {
@@ -19,4 +20,13 @@ class TrackersSettingsModel extends Model
         't_api_key',
         'api_version'
     ];
+
+
+    /**
+     * The roles that belong to the offer.
+     */
+    public function offers(): BelongsToMany
+    {
+        return $this->belongsToMany(Offer::class, 'offer_tracker', 'tracker_id', 'offer_id');
+    }
 }

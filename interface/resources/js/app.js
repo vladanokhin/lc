@@ -7,3 +7,4 @@ require('select2');
 // Custom scripts
 require('./flash-message');
 require('./select');
+require('./offers-table');
