@@ -17,7 +17,7 @@
                     @include('flash-messages.success-flash', ['message' => session('message')])
                 @endif
                 @include('lead-collector/settings/offers/offers-input')
-                <div class="flex justify-center md:justify-start mt-4">
+                <div class="flex justify-center mt-4 md:justify-start md:ml-3.5">
                     <button type="submit"
                             id="js-btn-submit"
                             class="bg-green-500 hover:bg-green-600 text-white font-bold px-3 py-1 ml-0 mx-2 my-1 border-b-4 border-green-500 hover:border-green-400 rounded-md"
